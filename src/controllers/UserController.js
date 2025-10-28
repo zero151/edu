@@ -3,9 +3,34 @@ class UserController {
     this.userService = userService;
   }
 
+  /**
+   * @swagger
+   * /api/users:
+   *   post:
+   *     tags: [Users]
+   *     summary: Регистрация нового пользователя
+   *     description: Создает нового пользователя. Лишние поля будут проигнорированы.
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             $ref: '#/components/schemas/UserRegistration'
+   *     responses:
+   *       201:
+   *         description: Пользователь создан
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/Success'
+   *       400:
+   *         $ref: '#/components/responses/ValidationError'
+   */
   register = async (req, res) => {
     try {
-      const { email, password, name, last_name, patronymic } = req.body;
+      const { email, password, name, last_name, patronymic } = req.body || {};
+      // Разрешенные поля (отбрасываем лишнее)
+      const payload = { email, password, name, last_name, patronymic };
 
       if (!email || !password || !name || !last_name || !patronymic) {
         return res.status(400).json({
@@ -14,7 +39,7 @@ class UserController {
         });
       }
 
-      const user = await this.userService.registerUser(req.body);
+      const user = await this.userService.registerUser(payload);
       
       res.status(201).json({
         success: true,
@@ -30,6 +55,24 @@ class UserController {
     }
   }
 
+  /**
+   * @swagger
+   * /api/users/{id}:
+   *   get:
+   *     tags: [Users]
+   *     summary: Получить пользователя по ID
+   *     parameters:
+   *       - $ref: '#/components/parameters/userId'
+   *     responses:
+   *       200:
+   *         description: Успешно
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/Success'
+   *       404:
+   *         $ref: '#/components/responses/NotFoundError'
+   */
   getUserById = async (req, res) => {
     try {
       const userId = parseInt(req.params.id);
@@ -56,6 +99,26 @@ class UserController {
     }
   }
 
+  /**
+   * @swagger
+   * /api/users/{id}:
+   *   put:
+   *     tags: [Users]
+   *     summary: Обновить данные пользователя
+   *     parameters:
+   *       - $ref: '#/components/parameters/userId'
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             $ref: '#/components/schemas/UserUpdate'
+   *     responses:
+   *       200:
+   *         description: Обновлено
+   *       400:
+   *         $ref: '#/components/responses/ValidationError'
+   */
   updateUser = async (req, res) => {
     try {
       const userId = parseInt(req.params.id);
@@ -67,7 +130,15 @@ class UserController {
         });
       }
 
-      const user = await this.userService.updateUser(userId, req.body);
+      // Вайтлист полей
+      const { email, name, last_name, patronymic } = req.body || {};
+      const updatePayload = { };
+      if (email !== undefined) updatePayload.email = email;
+      if (name !== undefined) updatePayload.name = name;
+      if (last_name !== undefined) updatePayload.last_name = last_name;
+      if (patronymic !== undefined) updatePayload.patronymic = patronymic;
+
+      const user = await this.userService.updateUser(userId, updatePayload);
       
       res.json({
         success: true,
@@ -109,6 +180,16 @@ class UserController {
     }
   }
 
+  /**
+   * @swagger
+   * /api/users:
+   *   get:
+   *     tags: [Users]
+   *     summary: Список пользователей
+   *     responses:
+   *       200:
+   *         description: Успешно
+   */
   getAllUsers = async (req, res) => {
     try {
       const users = await this.userService.getAllUsers();
@@ -127,6 +208,18 @@ class UserController {
     }
   }
 
+  /**
+   * @swagger
+   * /api/users/{id}/stats:
+   *   get:
+   *     tags: [Users]
+   *     summary: Статистика пользователя
+   *     parameters:
+   *       - $ref: '#/components/parameters/userId'
+   *     responses:
+   *       200:
+   *         description: Успешно
+   */
   getUserStats = async (req, res) => {
     try {
       const userId = parseInt(req.params.id);

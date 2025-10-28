@@ -3,9 +3,26 @@ class QuestionController {
     this.questionService = questionService;
   }
 
+  /**
+   * @swagger
+   * /api/questions:
+   *   post:
+   *     tags: [Tests]
+   *     summary: Создать вопрос
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             $ref: '#/components/schemas/QuestionCreate'
+   *     responses:
+   *       201:
+   *         description: Вопрос создан
+   */
   createQuestion = async (req, res) => {
     try {
-      const { test_id, question_text, question_type } = req.body;
+      const { test_id, question_text, question_type } = req.body || {};
+      const payload = { test_id, question_text, question_type };
 
       if (!test_id || !question_text || !question_type) {
         return res.status(400).json({
@@ -14,7 +31,7 @@ class QuestionController {
         });
       }
 
-      const question = await this.questionService.createQuestion(req.body);
+      const question = await this.questionService.createQuestion(payload);
       
       res.status(201).json({
         success: true,
@@ -56,6 +73,18 @@ class QuestionController {
     }
   }
 
+  /**
+   * @swagger
+   * /api/questions/test/{testId}:
+   *   get:
+   *     tags: [Tests]
+   *     summary: Список вопросов по тесту
+   *     parameters:
+   *       - $ref: '#/components/parameters/testId'
+   *     responses:
+   *       200:
+   *         description: Успешно
+   */
   getQuestionsByTestId = async (req, res) => {
     try {
       const testId = parseInt(req.params.testId);
@@ -83,6 +112,28 @@ class QuestionController {
     }
   }
 
+  /**
+   * @swagger
+   * /api/questions/{id}:
+   *   put:
+   *     tags: [Tests]
+   *     summary: Обновить вопрос
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: integer
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             $ref: '#/components/schemas/QuestionUpdate'
+   *     responses:
+   *       200:
+   *         description: Обновлено
+   */
   updateQuestion = async (req, res) => {
     try {
       const questionId = parseInt(req.params.id);
@@ -94,7 +145,11 @@ class QuestionController {
         });
       }
 
-      const question = await this.questionService.updateQuestion(questionId, req.body);
+      const { question_text, question_type } = req.body || {};
+      const updatePayload = {};
+      if (question_text !== undefined) updatePayload.question_text = question_text;
+      if (question_type !== undefined) updatePayload.question_type = question_type;
+      const question = await this.questionService.updateQuestion(questionId, updatePayload);
       
       res.json({
         success: true,
@@ -110,6 +165,22 @@ class QuestionController {
     }
   }
 
+  /**
+   * @swagger
+   * /api/questions/{id}:
+   *   delete:
+   *     tags: [Tests]
+   *     summary: Удалить вопрос
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: integer
+   *     responses:
+   *       200:
+   *         description: Удалено
+   */
   deleteQuestion = async (req, res) => {
     try {
       const questionId = parseInt(req.params.id);
@@ -136,6 +207,22 @@ class QuestionController {
     }
   }
 
+  /**
+   * @swagger
+   * /api/questions/{id}/with-answers:
+   *   get:
+   *     tags: [Tests]
+   *     summary: Вопрос с вариантами ответов
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: integer
+   *     responses:
+   *       200:
+   *         description: Успешно
+   */
   getQuestionWithAnswers = async (req, res) => {
     try {
       const questionId = parseInt(req.params.id);

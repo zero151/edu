@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+    branches: ['**']
+
+jobs:
+  build-and-format:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies (CI)
+        run: npm ci
+
+      - name: Prettier format check
+        run: npx --yes prettier@3.3.3 --check .
+
+      - name: Smoke build (load app without starting server)
+        env:
+          NODE_ENV: test
+        run: |
+          node -e "require('./src/app'); console.log('app module loaded')"
+          node -e "new (require('./src/app'))().getApp(); console.log('express app constructed')"
+
+      - name: Migration files present
+        run: |
+          test -f node-pg-migrate.json && echo 'migration config exists' || echo 'no migration config (ok)'
+
+      - name: Run tests
+        run: npm test

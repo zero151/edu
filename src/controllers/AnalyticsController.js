@@ -5,6 +5,26 @@ class AnalyticsController {
     this.analyticsService = analyticsService;
   }
 
+  /**
+   * @swagger
+   * /api/analytics/platform/stats:
+   *   get:
+   *     tags: [Analytics]
+   *     summary: Статистика платформы
+   *     parameters:
+   *       - in: query
+   *         name: period
+   *         schema:
+   *           type: string
+   *           enum: [day, week, month, year]
+   *       - in: query
+   *         name: includeDetails
+   *         schema:
+   *           type: boolean
+   *     responses:
+   *       200:
+   *         description: Общая статистика
+   */
   getPlatformStats = async (req, res) => {
     try {
       // Валидация query параметров
@@ -36,6 +56,33 @@ class AnalyticsController {
     }
   }
 
+  /**
+   * @swagger
+   * /api/analytics/courses/{courseId}/analytics:
+   *   get:
+   *     tags: [Analytics]
+   *     summary: Аналитика по курсу
+   *     parameters:
+   *       - $ref: '#/components/parameters/courseId'
+   *       - in: query
+   *         name: startDate
+   *         schema:
+   *           type: string
+   *           format: date
+   *       - in: query
+   *         name: endDate
+   *         schema:
+   *           type: string
+   *           format: date
+   *       - in: query
+   *         name: groupBy
+   *         schema:
+   *           type: string
+   *           enum: [day, week, month]
+   *     responses:
+   *       200:
+   *         description: Аналитика по курсу
+   */
   getCourseAnalytics = async (req, res) => {
     try {
       const courseId = parseInt(req.params.courseId);
@@ -91,6 +138,27 @@ class AnalyticsController {
     }
   }
 
+  /**
+   * @swagger
+   * /api/analytics/users/{userId}/learning-analytics:
+   *   get:
+   *     tags: [Analytics]
+   *     summary: Аналитика обучения пользователя
+   *     parameters:
+   *       - $ref: '#/components/parameters/userId'
+   *       - in: query
+   *         name: period
+   *         schema:
+   *           type: string
+   *           enum: [day, week, month, all]
+   *       - in: query
+   *         name: includeCourseDetails
+   *         schema:
+   *           type: boolean
+   *     responses:
+   *       200:
+   *         description: Аналитика обучения
+   */
   getUserLearningAnalytics = async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);
@@ -145,6 +213,27 @@ class AnalyticsController {
     }
   }
 
+  /**
+   * @swagger
+   * /api/analytics/learning-trends:
+   *   get:
+   *     tags: [Analytics]
+   *     summary: Тренды обучения
+   *     parameters:
+   *       - in: query
+   *         name: period
+   *         schema:
+   *           type: string
+   *           enum: [week, month, quarter, year]
+   *       - in: query
+   *         name: metric
+   *         schema:
+   *           type: string
+   *           enum: [completion, engagement, performance]
+   *     responses:
+   *       200:
+   *         description: Тренды обучения
+   */
   getLearningTrends = async (req, res) => {
     try {
       // Валидация query параметров

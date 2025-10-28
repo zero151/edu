@@ -3,9 +3,26 @@ class TestController {
     this.testService = testService;
   }
 
+  /**
+   * @swagger
+   * /api/tests:
+   *   post:
+   *     tags: [Tests]
+   *     summary: Создать тест
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             $ref: '#/components/schemas/TestCreate'
+   *     responses:
+   *       201:
+   *         description: Тест создан
+   */
   createTest = async (req, res) => {
     try {
-      const { course_id, title } = req.body;
+      const { course_id, title } = req.body || {};
+      const payload = { course_id, title };
 
       if (!course_id || !title) {
         return res.status(400).json({
@@ -14,7 +31,7 @@ class TestController {
         });
       }
 
-      const test = await this.testService.createTest(req.body);
+      const test = await this.testService.createTest(payload);
       
       res.status(201).json({
         success: true,
@@ -56,6 +73,18 @@ class TestController {
     }
   }
 
+  /**
+   * @swagger
+   * /api/tests/course/{courseId}:
+   *   get:
+   *     tags: [Tests]
+   *     summary: Список тестов по курсу
+   *     parameters:
+   *       - $ref: '#/components/parameters/courseId'
+   *     responses:
+   *       200:
+   *         description: Успешно
+   */
   getTestsByCourseId = async (req, res) => {
     try {
       const courseId = parseInt(req.params.courseId);
@@ -83,6 +112,24 @@ class TestController {
     }
   }
 
+  /**
+   * @swagger
+   * /api/tests/{id}:
+   *   put:
+   *     tags: [Tests]
+   *     summary: Обновить тест
+   *     parameters:
+   *       - $ref: '#/components/parameters/testId'
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             $ref: '#/components/schemas/TestUpdate'
+   *     responses:
+   *       200:
+   *         description: Обновлено
+   */
   updateTest = async (req, res) => {
     try {
       const testId = parseInt(req.params.id);
@@ -94,7 +141,10 @@ class TestController {
         });
       }
 
-      const test = await this.testService.updateTest(testId, req.body);
+      const { title } = req.body || {};
+      const updatePayload = {};
+      if (title !== undefined) updatePayload.title = title;
+      const test = await this.testService.updateTest(testId, updatePayload);
       
       res.json({
         success: true,
@@ -110,6 +160,18 @@ class TestController {
     }
   }
 
+  /**
+   * @swagger
+   * /api/tests/{id}:
+   *   delete:
+   *     tags: [Tests]
+   *     summary: Удалить тест
+   *     parameters:
+   *       - $ref: '#/components/parameters/testId'
+   *     responses:
+   *       200:
+   *         description: Удалено
+   */
   deleteTest = async (req, res) => {
     try {
       const testId = parseInt(req.params.id);
@@ -136,6 +198,18 @@ class TestController {
     }
   }
 
+  /**
+   * @swagger
+   * /api/tests/{id}/with-questions:
+   *   get:
+   *     tags: [Tests]
+   *     summary: Тест с вопросами
+   *     parameters:
+   *       - $ref: '#/components/parameters/testId'
+   *     responses:
+   *       200:
+   *         description: Успешно
+   */
   getTestWithQuestions = async (req, res) => {
     try {
       const testId = parseInt(req.params.id);

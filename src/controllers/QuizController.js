@@ -3,6 +3,19 @@ class QuizController {
     this.quizService = quizService;
   }
 
+  /**
+   * @swagger
+   * /api/quiz/users/{userId}/tests/{testId}/start:
+   *   post:
+   *     tags: [Tests]
+   *     summary: Начать попытку прохождения теста
+   *     parameters:
+   *       - $ref: '#/components/parameters/userId'
+   *       - $ref: '#/components/parameters/testId'
+   *     responses:
+   *       200:
+   *         description: Попытка начата
+   */
   startTest = async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);
@@ -31,9 +44,27 @@ class QuizController {
     }
   }
 
+  /**
+   * @swagger
+   * /api/quiz/answers/submit:
+   *   post:
+   *     tags: [Tests]
+   *     summary: Отправить ответ на вопрос
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             $ref: '#/components/schemas/QuizSubmitAnswer'
+   *     responses:
+   *       200:
+   *         description: Ответ сохранен
+   */
   submitAnswer = async (req, res) => {
     try {
-      const { attemptId, questionId, selectedOptionId } = req.body;
+      const { attemptId, questionId, selectedOptionId } = req.body || {};
+      const payload = { attemptId, questionId };
+      if (selectedOptionId !== undefined) payload.selectedOptionId = selectedOptionId;
 
       if (!attemptId || !questionId) {
         return res.status(400).json({
@@ -42,7 +73,7 @@ class QuizController {
         });
       }
 
-      const answer = await this.quizService.submitAnswer(attemptId, questionId, selectedOptionId);
+      const answer = await this.quizService.submitAnswer(payload.attemptId, payload.questionId, payload.selectedOptionId);
       
       res.json({
         success: true,
@@ -58,6 +89,18 @@ class QuizController {
     }
   }
 
+  /**
+   * @swagger
+   * /api/quiz/attempts/{attemptId}/finish:
+   *   post:
+   *     tags: [Tests]
+   *     summary: Завершить попытку
+   *     parameters:
+   *       - $ref: '#/components/parameters/attemptId'
+   *     responses:
+   *       200:
+   *         description: Результаты попытки
+   */
   finishAttempt = async (req, res) => {
     try {
       const attemptId = parseInt(req.params.attemptId);
@@ -85,6 +128,19 @@ class QuizController {
     }
   }
 
+  /**
+   * @swagger
+   * /api/quiz/users/{userId}/tests/{testId}/attempts:
+   *   get:
+   *     tags: [Tests]
+   *     summary: Список попыток пользователя по тесту
+   *     parameters:
+   *       - $ref: '#/components/parameters/userId'
+   *       - $ref: '#/components/parameters/testId'
+   *     responses:
+   *       200:
+   *         description: Список попыток
+   */
   getUserAttempts = async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);
@@ -113,6 +169,18 @@ class QuizController {
     }
   }
 
+  /**
+   * @swagger
+   * /api/quiz/attempts/{attemptId}/details:
+   *   get:
+   *     tags: [Tests]
+   *     summary: Детали попытки
+   *     parameters:
+   *       - $ref: '#/components/parameters/attemptId'
+   *     responses:
+   *       200:
+   *         description: Детали попытки
+   */
   getAttemptDetails = async (req, res) => {
     try {
       const attemptId = parseInt(req.params.attemptId);
