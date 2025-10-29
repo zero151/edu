@@ -85,15 +85,15 @@ POST /api/auth/login
     },
     servers: [
       {
-        url: 'http://localhost:3000/api',
+        url: 'http://localhost:3000',
         description: 'Сервер разработки'
       },
       {
-        url: 'https://api.edumobile.com/v1',
+        url: 'https://api.edumobile.com',
         description: 'Продакшен сервер'
       },
       {
-        url: 'https://staging-api.edumobile.com/v1',
+        url: 'https://staging-api.edumobile.com',
         description: 'Стейжинг сервер'
       }
     ],
