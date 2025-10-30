@@ -16,8 +16,8 @@ services:
   app:
     build: .
     command: node server.js
-    volumes:
-      - .:/app
+    # volumes:
+    #   - .:/app
     ports:
       - "3000:3000"
     environment:
