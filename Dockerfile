@@ -18,3 +18,4 @@ EXPOSE 3000
 
 # Запускаем приложение
 CMD ["node", "server.js"]
+
