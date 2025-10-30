@@ -90,6 +90,78 @@ class App {
     this.app.use('/api/auth', authRoutes(authController));
     this.app.use('/api/analytics', analyticsRoutes(analyticsController));
     
+    // Root landing page
+    this.app.get('/', (req, res) => {
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.send(`<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Edu API</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg:#ffffff; --text:#1f2937; --muted:#6b7280; --brand:#6d28d9; --brand2:#9333ea; --card:#f9fafb; }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,"Noto Sans",sans-serif;background:var(--bg);color:var(--text)}
+    .container{max-width:1100px;margin:0 auto;padding:24px}
+    .nav{display:flex;align-items:center;justify-content:space-between;padding:8px 0}
+    .brand{font-weight:800;letter-spacing:.02em}
+    .menu{display:flex;gap:20px;color:var(--muted)}
+    .cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin:28px 0}
+    .card{background:var(--card);border-radius:14px;padding:18px;text-align:center;border:1px solid #eef2f7}
+    .card h4{margin:10px 0 6px}
+    .card p{margin:0;color:var(--muted);font-size:14px;line-height:1.4}
+    .hero{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:30px;margin-top:34px}
+    .hero h1{color:#5b21b6;font-weight:800;letter-spacing:.02em;margin:0 0 10px}
+    .hero p{color:var(--muted);line-height:1.6;margin:0 0 10px}
+    .btn{display:inline-block;background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;text-decoration:none;padding:10px 18px;border-radius:999px;font-weight:600;box-shadow:0 6px 20px rgba(109,40,217,.35)}
+    .logo{width:100%;max-width:360px;aspect-ratio:1/1;display:block;margin:auto}
+    @media (max-width:900px){.cards{grid-template-columns:1fr}.hero{grid-template-columns:1fr}.menu{display:none}}
+  </style>
+ </head>
+ <body>
+  <div class="container">
+    <div class="nav">
+      <div class="brand">НАЗВАНИЕ</div>
+      <div class="menu">
+        <div>Главная</div>
+        <div>Мои проекты</div>
+        <div>Контакты</div>
+      </div>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <h4>SQL Server</h4>
+        <p>Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+      </div>
+      <div class="card">
+        <h4>Web API</h4>
+        <p>Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+      </div>
+      <div class="card">
+        <h4>Blazor WASM</h4>
+        <p>Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+      </div>
+    </div>
+
+    <div class="hero">
+      <img class="logo" src="https://raw.githubusercontent.com/github/explore/main/topics/nodejs/nodejs.png" alt="NodeJS" />
+      <div>
+        <h1>КРАТКО О ПРОЕКТЕ</h1>
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Officia tenetur reiciendis in quae, rem corporis id sequi debitis aliquam laudantium illum vel unde? Praesentium laboriosam neque eaque architecto maxime nihil?</p>
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Officia tenetur reiciendis in quae, rem corporis id sequi debitis aliquam laudantium illum vel unde? Praesentium laboriosam neque eaque architecto maxime nihil?</p>
+        <a class="btn" href="https://edu-3qeo.onrender.com/api-docs/">Подробнее</a>
+      </div>
+    </div>
+  </div>
+ </body>
+ </html>`);
+    });
+
     // Health check
     this.app.get('/health', (req, res) => {
       res.json({ 
